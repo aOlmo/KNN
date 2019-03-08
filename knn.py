@@ -9,6 +9,7 @@ mndata = MNIST('data')
 def display_sample(sample):
     print(mndata.display(sample))
 
+
 class KNN():
     def __init__(self, X_train, y_train):
         self.X_train = X_train
@@ -29,8 +30,19 @@ class KNN():
             distances[argmin_aux] = np.inf
             argmins.append(self.y_train[argmin_aux])
 
+        return np.bincount(argmins).argmax()
 
-        print(np.bincount(argmins).argmax())
+    def get_accuracy_of_set(self, K, X_set, y_set):
+        n = len(X_set)
+        cnt = 0
+        for i, elem in enumerate(X_set):
+            pred = self.predict(K, elem)
+            y = y_set[i]
+            cnt += 1 if y == pred else 0
+            if i % 200 == 0:
+                print("[+]: Iteration {}/{}".format(i, n))
+
+        print("[+]: Accuracy result: {}/{} = {}".format(cnt, n, cnt / n))
 
 if __name__ == '__main__':
     n_train = 6000
@@ -42,9 +54,8 @@ if __name__ == '__main__':
     X_train, y_train = np.array(X_train[:n_train]), np.array(y_train[:n_train])
     X_test, y_test = np.array(X_test[:n_test]), np.array(y_test[:n_test])
 
-    display_sample(X_test[10])
-
     test = KNN(X_train, y_train)
-    test.predict(3, X_test[10])
+    test.get_accuracy_of_set(99, X_test, y_test)
+
 
 
