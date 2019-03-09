@@ -1,5 +1,6 @@
 import random
 import numpy as np
+from io import StringIO
 
 from mnist import MNIST
 
@@ -33,8 +34,13 @@ class KNN():
         return np.bincount(argmins).argmax()
 
     def get_accuracy_of_set(self, K, X_set, y_set):
-        n = len(X_set)
+        if(np.array_equal(self.X_train, X_set)):
+            print("[+]: Calculating accuracy of training set")
+        else:
+            print("[+]: Calculating accuracy of set")
+
         cnt = 0
+        n = len(X_set)
         for i, elem in enumerate(X_set):
             pred = self.predict(K, elem)
             y = y_set[i]
@@ -42,11 +48,13 @@ class KNN():
             if i % 200 == 0:
                 print("[+]: Iteration {}/{}".format(i, n))
 
-        print("[+]: Accuracy result: {}/{} = {}".format(cnt, n, cnt / n))
+        return cnt/n
 
 if __name__ == '__main__':
-    n_train = 6000
+    n_runs = 5
     n_test = 1000
+    n_train = 6000
+    K = [1, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99]
 
     X_train, y_train = mndata.load_training()
     X_test , y_test = mndata.load_testing()
@@ -54,8 +62,47 @@ if __name__ == '__main__':
     X_train, y_train = np.array(X_train[:n_train]), np.array(y_train[:n_train])
     X_test, y_test = np.array(X_test[:n_test]), np.array(y_test[:n_test])
 
-    test = KNN(X_train, y_train)
-    test.get_accuracy_of_set(99, X_test, y_test)
 
+    knn = KNN(X_train, y_train)
+    train_error_rates = [0]*len(K)
+    test_error_rates = [0]*len(K)
 
+    for run in range(n_runs):
+        print("==================================")
+        print("[+]: RUN {}".format(run+1))
+        print("==================================")
 
+        print("===================")
+        print("      TEST SET     ")
+        print("===================")
+        for i, k in enumerate(K):
+            print("------------------")
+            print("[+]: Using K = {}".format(k))
+            print("------------------")
+            accuracy = knn.get_accuracy_of_set(k, X_test, y_test)
+            test_error_rates[i] += 1-accuracy
+
+        print("===================")
+        print("    TRAINING SET   ")
+        print("===================")
+        for i, k in enumerate(K):
+            print("------------------")
+            print("[+]: Using K = {}".format(k))
+            print("------------------")
+            accuracy = knn.get_accuracy_of_set(k, X_train, y_train)
+            train_error_rates[i] += 1-accuracy
+
+        test_error_rates = np.array(test_error_rates)/(run+1)
+        train_error_rates = np.array(train_error_rates)/(run+1)
+
+        np.save('test_error_rates', test_error_rates)
+        np.save('train_error_rates', train_error_rates)
+
+    t1 = np.load('test_error_rates.npy')
+    t2 = np.load('train_error_rates.npy')
+
+    print("TEST ERROR RATES")
+    print(t1)
+    print()
+    print("TRAIN ERROR RATES")
+    print(t2)
