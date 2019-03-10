@@ -4,6 +4,7 @@ from io import StringIO
 
 from mnist import MNIST
 
+__RESULTS_DIR__ = "results/"
 mndata = MNIST('data')
 
 
@@ -34,24 +35,19 @@ class KNN():
         return np.bincount(argmins).argmax()
 
     def get_accuracy_of_set(self, K, X_set, y_set):
-        if(np.array_equal(self.X_train, X_set)):
-            print("[+]: Calculating accuracy of training set")
-        else:
-            print("[+]: Calculating accuracy of set")
-
         cnt = 0
         n = len(X_set)
         for i, elem in enumerate(X_set):
             pred = self.predict(K, elem)
             y = y_set[i]
             cnt += 1 if y == pred else 0
-            if i % 200 == 0:
+            if i % 500 == 0:
                 print("[+]: Iteration {}/{}".format(i, n))
 
         return cnt/n
 
 if __name__ == '__main__':
-    n_runs = 5
+    n_runs = 1
     n_test = 1000
     n_train = 6000
     K = [1, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99]
@@ -95,14 +91,14 @@ if __name__ == '__main__':
         test_error_rates = np.array(test_error_rates)/(run+1)
         train_error_rates = np.array(train_error_rates)/(run+1)
 
-        np.save('test_error_rates', test_error_rates)
-        np.save('train_error_rates', train_error_rates)
+        np.save(__RESULTS_DIR__+'test_error_rates_run_{}'.format(run), test_error_rates)
+        np.save(__RESULTS_DIR__+'train_error_rates_run_{}'.format(run), train_error_rates)
 
-    t1 = np.load('test_error_rates.npy')
-    t2 = np.load('train_error_rates.npy')
-
-    print("TEST ERROR RATES")
-    print(t1)
-    print()
-    print("TRAIN ERROR RATES")
-    print(t2)
+    # t1 = np.load('test_error_rates.npy')
+    # t2 = np.load('train_error_rates.npy')
+    #
+    # print("TEST ERROR RATES")
+    # print(t1)
+    # print()
+    # print("TRAIN ERROR RATES")
+    # print(t2)
