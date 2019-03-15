@@ -91,20 +91,20 @@ def train_and_get_error_rates():
     test_error_rates = np.array(test_error_rates) / float(n_runs)
     train_error_rates = np.array(train_error_rates) / float(n_runs)
 
-    print("TEST")
+    print("Test error rates")
     print(test_error_rates)
 
-    print("TRAIN")
+    print("Train error rates")
     print(train_error_rates)
 
-        # np.save(__RESULTS_DIR__ + 'test_error_rates_run_{}'.format(run), test_error_rates)
-        # np.save(__RESULTS_DIR__ + 'train_error_rates_run_{}'.format(run), train_error_rates)
+    np.save(__RESULTS_DIR__ + 'test_error_rates', test_error_rates)
+    np.save(__RESULTS_DIR__ + 'train_error_rates', train_error_rates)
 
 if __name__ == '__main__':
-    # train_and_get_error_rates()
+    train_and_get_error_rates()
 
-    test_error_rates = np.load(__RESULTS_DIR__+"test_error_rates_run_1.npy")
-    train_error_rates = np.load(__RESULTS_DIR__+"train_error_rates_run_1.npy")
+    test_error_rates = np.load(__RESULTS_DIR__+"test_error_rates.npy")
+    train_error_rates = np.load(__RESULTS_DIR__+"train_error_rates.npy")
 
     plt.title("Error rates")
     plt.plot(K, test_error_rates, 'bo-', label='Test set', linewidth=2)
